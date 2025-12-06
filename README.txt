@@ -1,156 +1,221 @@
-================================================================
-ResNet-18 麵條分類專案 - 快速開始指南
-================================================================
+# ResNet-18 Noodle Classification Project
 
-目標: 使用ResNet-18從頭訓練，達到測試集95%以上準確率
-類別: 義大利麵(spaghetti), 拉麵(ramen), 烏龍麵(udon)
 
-================================================================
-專案檔案說明
-================================================================
+---
 
-核心檔案:
-  resnet18_model.py    - ResNet-18模型定義（從零實作）
-  train.py             - 訓練腳本（自動分割90%訓練/10%驗證）
-  predict.py           - 測試集預測腳本
-  evaluate.py          - 模型評估腳本
+## 🎯 Goal
 
-執行檔案 (雙擊執行):
-  run_train.bat        - 執行訓練
-  run_predict.bat      - 執行預測
-  run_evaluate.bat     - 執行評估
+Train a **ResNet‑18 model from scratch** to classify three noodle types with **95%+ accuracy** on the testing set.
 
-資料夾:
-  dataset2025/train/   - 訓練資料（5,280張，3類）
-  dataset2025/test/    - 測試資料（4,179張，待預測）
+**Classes:**
 
-================================================================
-使用步驟
-================================================================
+* Spaghetti
+* Ramen
+* Udon
 
-步驟1: 安裝依賴
------------------
-  pip install -r requirements.txt
+---
 
-  需要的套件: torch, torchvision, matplotlib, seaborn,
-             pandas, scikit-learn, tqdm, pillow
+## 📁 Project Structure
 
-步驟2: 訓練模型
------------------
-  方法A: 雙擊 run_train.bat
-  方法B: python train.py
+### Core Files
 
-  訓練說明:
-  - 程式會自動將訓練資料分成90%訓練/10%驗證
-  - 不需要手動建立train和val資料夾
-  - 訓練約2-3小時（需GPU，建議CUDA）
-  - 最佳模型自動儲存為: best_resnet18_noodles.pth
-  - 訓練曲線圖: training_history.png
+* **resnet18_model.py** — Custom ResNet‑18 implementation
+* **train.py** — Training script (auto‑splits 90% train / 10% validation)
+* **predict.py** — Generates predictions on the test set
+* **evaluate.py** — Model evaluation script
 
-步驟3: 評估模型（可選）
-------------------------
-  方法A: 雙擊 run_evaluate.bat
-  方法B: python evaluate.py
+### Executable Files (Double‑click to run)
 
-  輸出:
-  - 整體準確率和各類別準確率
-  - 分類報告（精確率、召回率、F1分數）
-  - 混淆矩陣圖: confusion_matrix.png
+* **run_train.bat** — Start training
+* **run_predict.bat** — Run predictions
+* **run_evaluate.bat** — Run evaluation
 
-步驟4: 預測測試集
-------------------
-  方法A: 雙擊 run_predict.bat
-  方法B: python predict.py
+### Dataset Folders
 
-  輸出:
-  - submission.csv（包含4,179張測試圖片的預測結果）
-  - 格式: ID,Target
-    範例:
-    ID,Target
-    0,2
-    1,0
-    2,1
-    其中 Target: 0=spaghetti, 1=ramen, 2=udon
+* `dataset2025/train/` — Training images (5,280 images, 3 classes)
+* `dataset2025/test/` — Testing images (4,179 images, no labels)
 
-================================================================
-重要提醒
-================================================================
+---
 
-1. 必須有GPU（CUDA）
-   - 檢查: python -c "import torch; print(torch.cuda.is_available())"
-   - 如果False，訓練會非常慢
+## 🚀 How to Use
 
-2. 訓練會自動分割資料
-   - 不需要手動分割train/val
-   - 使用random_split自動切分
-   - 驗證集會自動使用不同的資料增強（無augmentation）
+### Step 1: Install Dependencies
 
-3. .bat檔案作用
-   - 設定環境變數（解決OpenMP衝突）
-   - 自動執行對應的Python腳本
-   - Windows用戶推薦使用
+```bash
+pip install -r requirements.txt
+```
 
-4. 訓練策略
-   - Batch Size: 32
-   - Learning Rate: 0.1（Cosine Annealing）
-   - Epochs: 100（含Early Stopping，15 epochs無改善則停止）
-   - 資料增強: RandomCrop, Flip, Rotation, ColorJitter等
+Required packages:
 
-================================================================
-輸出檔案
-================================================================
+* torch, torchvision
+* matplotlib, seaborn
+* pandas, scikit‑learn
+* tqdm, pillow
 
-訓練後會產生:
-  best_resnet18_noodles.pth   - 最佳模型權重（約43MB）
-  training_history.png         - 訓練/驗證曲線圖
+---
 
-評估後會產生:
-  confusion_matrix.png         - 混淆矩陣
+### Step 2: Train the Model
 
-預測後會產生:
-  submission.csv               - 測試集預測結果
+**Method A:** Double‑click `run_train.bat`
 
-================================================================
-調整超參數（如果準確率不夠）
-================================================================
+**Method B:**
 
-編輯 train.py 的 main() 函數:
+```bash
+python train.py
+```
 
-  LEARNING_RATE = 0.1      # 可改為 0.05, 0.15
-  BATCH_SIZE = 32          # 可改為 16, 64
-  NUM_EPOCHS = 100         # 可增加到 150
+Training notes:
 
-  patience = 15            # Early stopping耐心值，可增加
+* Automatically splits training data into 90% training / 10% validation
+* No need to manually create `train/` or `val/`
+* Training takes ~2–3 hours with GPU (CUDA recommended)
+* Best model saved as: **best_resnet18_noodles.pth**
+* Training curve saved as: **training_history.png**
 
-編輯 get_data_transforms() 調整資料增強強度
+---
 
-================================================================
-常見問題
-================================================================
+### Step 3: Evaluate the Model (Optional)
 
-Q: CUDA out of memory?
-A: 減小BATCH_SIZE（改為16或8）
+**Method A:** Double‑click `run_evaluate.bat`
 
-Q: 訓練太慢?
-A: 確認有GPU，增大BATCH_SIZE（需更多記憶體）
+**Method B:**
 
-Q: 準確率不夠95%?
-A: 調整學習率、增加epochs、強化資料增強
+```bash
+python evaluate.py
+```
 
-Q: 中文顯示亂碼?
-A: 這是終端編碼問題，不影響功能，所有檔案會正常生成
+Outputs:
 
-================================================================
-開始訓練
-================================================================
+* Overall accuracy and per‑class accuracy
+* Classification report (precision, recall, F1 score)
+* Confusion matrix saved as: **confusion_matrix.png**
 
-現在可以執行:
+---
 
-  雙擊 run_train.bat
+### Step 4: Predict on the Test Set
 
-或
+**Method A:** Double‑click `run_predict.bat`
 
-  python train.py
+**Method B:**
 
-祝訓練順利！目標: 95%+ 準確率
-================================================================
+```bash
+python predict.py
+```
+
+Output:
+
+* `submission.csv` containing predictions for 4,179 images
+
+Format:
+
+```
+ID,Target
+0,2
+1,0
+2,1
+```
+
+Where:
+
+* `0 = spaghetti`
+* `1 = ramen`
+* `2 = udon`
+
+---
+
+## ⚠️ Important Notes
+
+1. **GPU (CUDA) is required** for reasonable training speed.
+
+   ```bash
+   python -c "import torch; print(torch.cuda.is_available())"
+   ```
+
+   If it prints `False`, training will be extremely slow.
+
+2. **Automatic dataset splitting**
+
+   * Uses `random_split`
+   * Validation set uses no augmentation
+
+3. **What the .bat files do**
+
+   * Set environment variables (fix OpenMP issues)
+   * Run the corresponding Python script
+   * Recommended for Windows users
+
+4. **Training Strategy**
+
+   * Batch Size: 32
+   * Learning Rate: 0.1 (Cosine Annealing)
+   * Epochs: 100 (Early stopping after 15 epochs without improvement)
+   * Data Augmentation: RandomCrop, Flip, Rotation, ColorJitter
+
+---
+
+## 🧾 Output Files
+
+### After Training
+
+* **best_resnet18_noodles.pth** — Best model weights (~43 MB)
+* **training_history.png** — Accuracy/loss plot
+
+### After Evaluation
+
+* **confusion_matrix.png**
+
+### After Prediction
+
+* **submission.csv**
+
+---
+
+## 🔧 Hyperparameter Tuning
+
+Modify these in `train.py` inside `main()`:
+
+```python
+LEARNING_RATE = 0.1      # Try 0.05 or 0.15
+BATCH_SIZE = 32          # Try 16 or 64
+NUM_EPOCHS = 100         # Increase to 150 if needed
+patience = 15            # For early stopping
+```
+
+To adjust data augmentation, edit `get_data_transforms()`.
+
+---
+
+## ❓ FAQ
+
+**Q: CUDA out of memory?**
+
+* Reduce `BATCH_SIZE` to 16 or 8.
+
+**Q: Training too slow?**
+
+* Ensure you're using a GPU.
+* Increase `BATCH_SIZE` if memory allows.
+
+**Q: Accuracy below 95%?**
+
+* Tune learning rate, increase epochs, or strengthen augmentation.
+
+**Q: Chinese characters appear corrupted?**
+
+* This is a terminal encoding issue. Outputs and files will not be affected.
+
+---
+
+## 🏁 Start Training
+
+Run:
+
+```bash
+python train.py
+```
+
+Or double‑click:
+
+```
+run_train.bat
+```
